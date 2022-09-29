@@ -1,5 +1,3 @@
-This repository will be updated with all materials soon. Please direct any specific queries to [veej@hku.hk](mailto:veej@hku.hk)
-
 # Resurgence of Omicron BA.2 in SARS-CoV-2 infection-naive Hong Kong 
 
 Ruopeng Xie1,2,6, Kimberly M. Edwards1,2,6, Dillon C. Adam1, Kathy S.M. Leung1, Shreya Gurung1,2, Xiaoman Wei1,2, Daisy Y.M. Ng1, Gigi Y.Z. Liu1, Pavithra Krishnan1, Lydia D.J. Chang1, Samuel M.S. Cheng1, Haogao Gu1, Gilman K.H. Siu3, Joseph T. Wu1,4, Gabriel M. Leung1,4, Malik Peiris1,5, Benjamin J. Cowling1,4, Leo L.M. Poon1,2,5, Vijaykrishna Dhanasekaran1,2,*
