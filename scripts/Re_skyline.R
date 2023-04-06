@@ -122,7 +122,7 @@ BA.2.bdsky <- ggplot(df.BA.2.2.Re)+
 
 BA.2.bdsky
 
-ggsave("figures/BA.2_bdskys_skyline_different_dataset.pdf",BA.2.bdsky,width=14,height=8,units="cm")
+ggsave("../results/Re/BA.2_bdskys_skyline_different_dataset.pdf",BA.2.bdsky,width=14,height=8,units="cm")
 
 
 #un.20
@@ -143,7 +143,7 @@ ggsave("figures/BA.2_bdskys_skyline_different_dataset.pdf",BA.2.bdsky,width=14,h
           axis.text.x = element_text(angle = 45, hjust = 0.9, vjust = 0.9),
           legend.position=c(0.85,0.6)))
 
-ggsave("figures/BA.2_bdskys_skyline_un.20.pdf",width=10,height=6,units="cm")
+ggsave("../results/Re/BA.2_bdskys_skyline_un.20.pdf",width=10,height=6,units="cm")
 
 #un.40
 (BA.2.bdsky.un.40 <- ggplot(df.BA.2.2.un.40.v2)+
@@ -163,8 +163,8 @@ ggsave("figures/BA.2_bdskys_skyline_un.20.pdf",width=10,height=6,units="cm")
           axis.text.x = element_text(angle = 45, hjust = 0.9, vjust = 0.9),
           legend.position=c(0.85,0.6)))
 
-#ggsave("figures/BA.2_bdskys_skyline_un.40.pdf",width=10,height=6,units="cm")
-ggsave("figures/BA.2_bdskys_skyline_un.40_final.pdf",width=16.8,height=5,units="cm")
+ggsave("../results/Re/BA.2_bdskys_skyline_un.40.pdf",width=10,height=6,units="cm")
+#ggsave("../results/Re/BA.2_bdskys_skyline_un.40_final.pdf",width=16.8,height=5,units="cm")
 
 #proportional
 (BA.2.bdsky.pro <- ggplot(df.BA.2.2.pro)+
@@ -184,4 +184,4 @@ ggsave("figures/BA.2_bdskys_skyline_un.40_final.pdf",width=16.8,height=5,units="
           axis.text.x = element_text(angle = 45, hjust = 0.9, vjust = 0.9),
           legend.position=c(0.85,0.6)))
 
-ggsave("figures/BA.2_bdskys_skyline_pro.pdf",width=10,height=6,units="cm")
+ggsave("../results/Re/BA.2_bdskys_skyline_pro.pdf",width=10,height=6,units="cm")

@@ -34,16 +34,56 @@ sq <- seq(as.Date(start(BA.2.2.skygrid.z)), as.Date(end(BA.2.2.skygrid.z), frac 
 zd <- na.approx(BA.2.2.skygrid.z, x = as.Date, xout = sq)
 BA.2.2.skygrid.smooth$Lower <- zd
 
-#Re
-BA.2.2.mean.Re <- read_tsv("../results/Re/BA.2.2_mean_bdsky_skyline.tsv")%>% 
-  filter(date > "2022-01-05") %>% 
-  mutate(Re = mean_value,
+#BDSKY skyline
+lf.BA.2.2 <- readLogfile("Beast2/revision/xml_edited/HK_BA_2_2_un_40.fasta.edited.final.v2.0.1.log", burnin=0)
+
+Re_sky.BA.2.2    <- getSkylineSubset(lf.BA.2.2, "reproductiveNumber")
+Re_hpd.BA.2.2   <- getMatrixHPD(Re_sky.BA.2.2)
+delta_hpd.BA.2.2 <- getHPD(lf.BA.2.2$becomeUninfectiousRate)
+
+plotSkyline(1:16, Re_hpd.BA.2.2, type='step', ylab="R")
+
+
+origin_max <- mean(lf.BA.2.2$origin_BDSKY_Serial)
+treeheight <- mean(lf.BA.2.2$TreeHeight)
+#info_span <- 1.667
+timegrid.BA.2.2 <- seq(0,origin_max,length.out=96)
+Re_gridded.BA.2.2 <- gridSkyline(Re_sky.BA.2.2, lf.BA.2.2$origin, timegrid.BA.2.2)
+Re_gridded_hpd.BA.2.2 <- getMatrixHPD(Re_gridded.BA.2.2)
+
+times.BA.2.2 <- 2022.317-timegrid.BA.2.2
+
+df.BA.2.2.Re <- as.data.frame(t(as.data.frame(Re_gridded_hpd.BA.2.2)))
+
+rownames(df.BA.2.2.Re) <- NULL
+colnames(df.BA.2.2.Re) <- c("Lower","Value","Upper")
+
+df.BA.2.2.Re$Time <- times.BA.2.2
+df.BA.2.2.Re$date <- as.Date(date_decimal(df.BA.2.2.Re$Time,tz = "EST"))
+
+df.BA.2.2.Re.pre <- df.BA.2.2.Re %>% filter(date > "2022-01-05") %>% 
+  mutate(Re = Value,
          date = as.character(date)) %>% 
   subset(,c("date","Re"))
 
 
+smooth_per_day <- function(value_list,date_list){
+  zo <- zoo(value_list,date_list)
+  sq <- seq(as.Date(start(zo)), as.Date(end(zo), frac = 1), by = "day")
+  zd <- na.approx(zo, x = as.Date, xout = sq)
+  df.zd <- as.data.frame(zd)
+  date <- rownames(df.zd)
+  rownames(df.zd) <- NULL
+  #return two columns: zd and date
+  return (cbind(df.zd,date))
+}
+
+df.BA.2.2.Re.pre.smooth <- smooth_per_day(df.BA.2.2.Re.pre$Re,df.BA.2.2.Re.pre$date)
+colnames(df.BA.2.2.Re.pre.smooth)<- c("Re","date")
+
+
 #Prevalence
-BA.2.2.estimate <- merge(BA.2.2.skygrid.smooth,BA.2.2.mean.Re,all.x = TRUE,by = "date")
+BA.2.2.estimate <- merge(BA.2.2.skygrid.smooth,df.BA.2.2.Re.pre.smooth,all.x = TRUE,by = "date")
 
 k_values = c(0.05,0.1,0.15,0.2)
 generation_times = c(2,3)
@@ -53,9 +93,9 @@ daily.incidence.summary <- vector()
 
 for(k in 1:length(k_values)){
   for(t in 1:length(generation_times)){
-    BA.2.2.estimate$prevalence <- BA.2.2.estimate$Mean*(1/BA.2.2.estimate$Re+1+1/k_values[k])/(generation_times[t]/365)
-    BA.2.2.estimate$prevalence_Upper <- as.numeric(BA.2.2.estimate$Upper*(1/BA.2.2.estimate$Re+1+1/k_values[k])/(generation_times[t]/365))
-    BA.2.2.estimate$prevalence_Lower <- as.numeric(BA.2.2.estimate$Lower*(1/BA.2.2.estimate$Re+1+1/k_values[k])/(generation_times[t]/365))
+    BA.2.2.estimate$prevalence <- BA.2.2.estimate$Mean*BA.2.2.estimate$Re*(1+1/k_values[k])/(generation_times[t]/365)
+    BA.2.2.estimate$prevalence_Upper <- as.numeric(BA.2.2.estimate$Upper*BA.2.2.estimate$Re*(1+1/k_values[k])/(generation_times[t]/365))
+    BA.2.2.estimate$prevalence_Lower <- as.numeric(BA.2.2.estimate$Lower*BA.2.2.estimate$Re*(1+1/k_values[k])/(generation_times[t]/365))
     BA.2.2.estimate$k <- k_values[k]
     BA.2.2.estimate$generation_time <- generation_times[t]
     
@@ -151,9 +191,9 @@ for(k in 1:length(k_values)){
   }
 }
 
-write_tsv(daily.incidence.summary,"../results/prevalence/daily_incidence_summary.tsv")
-write_tsv(incidence.summary,"../results/prevalence/incidence_summary.tsv")
-write_tsv(prevalence.summary,"../results/prevalence/prevalence_summary.tsv")
+#write_tsv(daily.incidence.summary,"../results/prevalence/daily_incidence_summary.tsv")
+#write_tsv(incidence.summary,"../results/prevalence/incidence_summary.tsv")
+#write_tsv(prevalence.summary,"../results/prevalence/prevalence_summary.tsv")
 
 #epi data
 epi_cases <- read_tsv("../data/HK_epi_data.tsv") %>% 
